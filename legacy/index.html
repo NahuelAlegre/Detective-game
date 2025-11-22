@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Misterio del Inventario de Conceptos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="fog">
+  <div class="grain"></div>
+  <div class="page">
+    <header>
+      <h1>Misterio del Inventario de Conceptos</h1>
+      <div class="ornament"></div>
+      <p class="how-to">
+        Elige un expediente para abrir y luego lee cada escena. Las rutas de diálogo solo se abren cuando ya aprendiste ciertos conceptos.
+        Cuando estés listo, decide cómo cerrar el caso o reinicia para seguir otro hilo.
+      </p>
+      <div class="controls hidden" id="controls">
+        <div class="control-actions">
+          <span class="active-case" id="active-case"><span class="case-dot"></span> Ningún caso seleccionado</span>
+          <div id="money-panel" class="money-panel hidden">
+            <span class="money-label">Fondos</span>
+            <span id="money-amount" class="money-amount">$0</span>
+          </div>
+          <button class="restart-btn" id="case-menu-btn">Cambiar de caso</button>
+          <button class="restart-btn" id="restart-btn">Reiniciar investigación</button>
+        </div>
+      </div>
+    </header>
+
+    <section id="case-selector" class="case-selector card">
+      <div class="case-selector-header">
+        <span class="case-tag">Selector de casos</span>
+        <button class="help-btn">?</button>
+        <div class="tooltip">Aquí puedes elegir qué misterio quieres investigar. Comienza con el tutorial si es tu primera vez.</div>
+        <p class="case-lede">Elige qué expediente abrir antes de entrar en escena.</p>
+        <p class="case-help">Puedes probar el Caso Tutorial para aprender el inventario de conceptos o saltar directo al Caso principal.</p>
+      </div>
+      <div id="case-grid" class="case-grid"></div>
+    </section>
+
+    <div id="game-ui" class="hidden">
+      <div class="layout">
+        <div class="col-left">
+          <aside class="card mini-map-panel" id="mini-map-panel">
+            <div class="panel-head">
+              <h2>Mapa</h2>
+              <p class="panel-sub">Ubicación actual</p>
+              <button class="help-btn">?</button>
+              <div class="tooltip">Muestra tu ubicación actual en el mundo del juego.</div>
+            </div>
+            <div id="mini-map-grid" class="mini-map-grid"></div>
+          </aside>
+
+          <aside class="card locations">
+            <div class="panel-head">
+              <h2>Ubicaciones</h2>
+              <p class="panel-sub">Lugares conocidos</p>
+              <button class="help-btn">?</button>
+              <div class="tooltip">Lista de lugares disponibles para visitar. El progreso de investigación no se muestra al jugador; los eventos se desbloquean internamente.</div>
+            </div>
+            <ul id="location-list" class="location-list"></ul>
+          </aside>
+
+          <aside class="card notes-panel">
+            <div class="panel-head">
+              <h2>Notas del Investigador</h2>
+              <p class="panel-sub">Registro automático</p>
+              <button class="help-btn">?</button>
+              <div class="tooltip">Un registro automático de las pistas y eventos importantes que has descubierto.</div>
+            </div>
+            <div id="notes-list" class="notes-list"></div>
+          </aside>
+        </div>
+
+        <main class="story card" style="position: relative;">
+          <button class="help-btn" style="top: 20px; right: 20px;">?</button>
+          <div class="tooltip" style="top: 45px; right: 20px;">Aquí se desarrolla la narrativa. Lee los textos y toma decisiones para avanzar.</div>
+          <div id="scene-text" class="scene-text"></div>
+
+          <div id="puzzle-container" class="info-block hidden">
+            <p class="info-title"><span class="dot"></span>Prueba de conceptos</p>
+            <p id="puzzle-description" class="info-text"></p>
+            <button id="puzzle-button" class="puzzle-btn">Intentar resolver</button>
+          </div>
+
+          <div id="combination-container" class="info-block hidden">
+            <p class="info-title"><span class="dot"></span>Deducciones disponibles</p>
+            <div id="combination-list"></div>
+            <p id="combination-feedback" class="info-text hidden"></p>
+          </div>
+
+          <div id="choices" class="choices"></div>
+        </main>
+
+        <div class="col-right">
+          <aside class="card deduction-tree-panel">
+            <div class="panel-head">
+              <h2>Árbol de Deducción</h2>
+              <p class="panel-sub">Mapa mental de conceptos</p>
+              <button class="help-btn">?</button>
+              <div class="tooltip">Visualiza cómo se conectan las pistas y conceptos que has encontrado.</div>
+            </div>
+            <div id="deduction-tree" class="deduction-tree"></div>
+          </aside>
+
+          <aside class="card suspects">
+            <div class="panel-head">
+              <h2>Sospechosos</h2>
+              <p class="panel-sub">Niveles de sospecha en vivo</p>
+              <button class="help-btn">?</button>
+              <div class="tooltip">Lista de personas de interés y su nivel de sospecha basado en tus hallazgos.</div>
+            </div>
+            <ul id="suspect-list" class="suspect-list"></ul>
+          </aside>
+
+          <aside class="inventory card">
+            <div class="inventory-header">
+              <h2>Inventario de Conceptos</h2>
+              <p class="inventory-hint">Los conceptos tienen tipo: sensorial, deducido o falso. Solo las ideas correctas abren caminos.</p>
+              <button class="help-btn">?</button>
+              <div class="tooltip">Tus herramientas mentales. Usa estos conceptos para desbloquear nuevas opciones de diálogo.</div>
+            </div>
+            <ul id="inventory-list"></ul>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="case-tutorial.js"></script>
+  <script src="case-principal.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
