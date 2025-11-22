@@ -53,7 +53,7 @@
     font-size: 10px;
     letter-spacing: 2px;
     color: var(--ink-dark);
-    opacity: 0.6;
+    opacity: 0.85;
     text-transform: uppercase;
   }
 
@@ -105,16 +105,17 @@
 
   .location-desc {
     font-size: 11px;
-    color: #666;
+    color: var(--ink-dark);
     line-height: 1.4;
     margin: 0;
     font-family: var(--font-ui);
+    font-weight: 600;
   }
 
   .empty-state {
     font-family: var(--typewriter-font);
     color: var(--ink-dark);
-    opacity: 0.5;
+    opacity: 0.65;
     font-style: italic;
     grid-column: 1 / -1;
   }

@@ -72,7 +72,7 @@
         font-size: 10px;
         letter-spacing: 2px;
         color: var(--ink-dark);
-        opacity: 0.6;
+        opacity: 0.85;
         text-transform: uppercase;
     }
 
@@ -152,10 +152,11 @@
 
     .suspect-desc {
         font-size: 12px;
-        color: #555;
+        color: var(--ink-dark);
         line-height: 1.4;
         margin: 0 0 10px 0;
         font-family: var(--font-ui);
+        font-weight: 600;
     }
 
     .suspect-concepts {
@@ -169,14 +170,14 @@
         padding: 2px 6px;
         font-size: 10px;
         border-radius: 2px;
-        color: #666;
+        color: var(--ink-dark);
         font-family: var(--font-mono);
     }
 
     .empty-state {
         font-family: var(--typewriter-font);
         color: var(--ink-dark);
-        opacity: 0.5;
+        opacity: 0.65;
         font-style: italic;
     }
 </style>

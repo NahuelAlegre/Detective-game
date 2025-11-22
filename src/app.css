@@ -47,7 +47,7 @@
   --folder-bg: #e8dcb5;
   --folder-tab: #dcc694;
   --folder-tab-active: #f4e4bc;
-  --ink-dark: #2c3e50;
+  --ink-dark: #1a2432;
   --typewriter-font: "Special Elite", "Courier New", monospace;
 }
 
@@ -392,6 +392,7 @@ h1::before {
   background-size: 100% 1.2em;
   color: var(--ink-dark);
   font-family: var(--typewriter-font);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .folder-texture {
@@ -472,6 +473,7 @@ aside.card {
   padding: 16px;
   box-shadow: var(--shadow-card);
   transition: border-color 0.3s;
+  color: var(--ink);
 }
 
 aside.card:hover {

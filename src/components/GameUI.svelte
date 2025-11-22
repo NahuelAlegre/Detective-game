@@ -234,7 +234,7 @@
     font-family: var(--typewriter-font);
     font-size: 14px;
     color: var(--ink-dark);
-    opacity: 0.7;
+    opacity: 0.92;
     letter-spacing: 2px;
     font-weight: bold;
   }
@@ -276,7 +276,7 @@
     cursor: pointer;
     transition: all 0.2s;
     font-weight: 600;
-    opacity: 0.7;
+    opacity: 0.95;
     font-family: var(--typewriter-font);
   }
 
