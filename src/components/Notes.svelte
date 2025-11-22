@@ -62,13 +62,11 @@
     .notes-lines {
         font-family: "Courier New", Courier, monospace; /* Fallback if typewriter font fails */
         font-family: var(--typewriter-font);
-        color: var(--ink-dark);
-        font-weight: 600;
-        line-height: 1.5; /* Match the background lines if possible */
-        max-height: 400px;
-        overflow-y: auto;
-        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
-    }
+            color: #000;
+            font-weight: 600;
+            line-height: 1.5; /* Match the background lines if possible */
+            max-height: 400px;
+            overflow-y: auto;    }
 
     .note-item {
         display: flex;
