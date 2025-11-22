@@ -1,17 +1,18 @@
 <script>
-  import MiniMap from './MiniMap.svelte';
-  import Locations from './Locations.svelte';
-  import Notes from './Notes.svelte';
-  import Scene from './Scene.svelte';
-  import DeductionTree from './DeductionTree.svelte';
-  import Suspects from './Suspects.svelte';
-  import Inventory from './Inventory.svelte';
-  import DeductionsPopup from './DeductionsPopup.svelte';
-  import { playModalOpen } from '../sfx.js';
+  import MiniMap from "./MiniMap.svelte";
+  import Locations from "./Locations.svelte";
+  import Notes from "./Notes.svelte";
+  import Scene from "./Scene.svelte";
+  import DeductionTree from "./DeductionTree.svelte";
+  import Suspects from "./Suspects.svelte";
+  import Inventory from "./Inventory.svelte";
+  import DeductionsPopup from "./DeductionsPopup.svelte";
+  import { playModalOpen } from "../sfx.js";
+  import { fly } from "svelte/transition";
 
   let showDeductions = false;
   let showCaseFile = false;
-  let activeTab = 'investigation'; // Default tab
+  let activeTab = "investigation"; // Default tab
 
   function openDeductions() {
     playModalOpen();
@@ -46,40 +47,68 @@
 
     <!-- Case File Toggle Button -->
     <button class="case-file-toggle" on:click={toggleCaseFile}>
-      {showCaseFile ? 'Cerrar Expediente' : 'Abrir Expediente'}
+      {showCaseFile ? "Cerrar Expediente" : "Abrir Expediente"}
     </button>
 
     <!-- Case File Panel (Modal/Overlay) -->
     {#if showCaseFile}
-      <div class="case-file-overlay">
+      <div
+        class="case-file-overlay folder-texture"
+        transition:fly={{ y: 50, duration: 300 }}
+      >
+        <div class="folder-header">
+          <span class="folder-label">CONFIDENCIAL // EXPEDIENTE #001</span>
+          <button class="close-folder-btn" on:click={toggleCaseFile}>✕</button>
+        </div>
         <div class="case-file-content">
           <div class="notebook-tabs">
-            <button class="tab-btn" class:active={activeTab === 'investigation'} on:click={() => setTab('investigation')}>
+            <button
+              class="tab-btn"
+              class:active={activeTab === "investigation"}
+              on:click={() => setTab("investigation")}
+            >
               Investigación
             </button>
-            <button class="tab-btn" class:active={activeTab === 'notes'} on:click={() => setTab('notes')}>
+            <button
+              class="tab-btn"
+              class:active={activeTab === "notes"}
+              on:click={() => setTab("notes")}
+            >
               Notas
             </button>
-            <button class="tab-btn" class:active={activeTab === 'locations'} on:click={() => setTab('locations')}>
+            <button
+              class="tab-btn"
+              class:active={activeTab === "locations"}
+              on:click={() => setTab("locations")}
+            >
               Lugares
             </button>
           </div>
 
-          <div class="notebook-body">
-            {#if activeTab === 'investigation'}
-              <div class="tab-pane">
+          <div class="notebook-body paper-texture">
+            {#if activeTab === "investigation"}
+              <div
+                class="tab-pane"
+                in:fly={{ x: -20, duration: 300, delay: 100 }}
+              >
                 <Suspects />
                 <DeductionTree />
                 <button class="deductions-toggle-btn" on:click={openDeductions}>
                   Abrir Tablero de Deducciones
                 </button>
               </div>
-            {:else if activeTab === 'notes'}
-              <div class="tab-pane">
+            {:else if activeTab === "notes"}
+              <div
+                class="tab-pane"
+                in:fly={{ x: -20, duration: 300, delay: 100 }}
+              >
                 <Notes />
               </div>
-            {:else if activeTab === 'locations'}
-              <div class="tab-pane">
+            {:else if activeTab === "locations"}
+              <div
+                class="tab-pane"
+                in:fly={{ x: -20, duration: 300, delay: 100 }}
+              >
                 <Locations />
               </div>
             {/if}
@@ -90,7 +119,7 @@
   </div>
 
   {#if showDeductions}
-    <DeductionsPopup on:close={() => showDeductions = false} />
+    <DeductionsPopup on:close={() => (showDeductions = false)} />
   {/if}
 </div>
 
@@ -173,7 +202,7 @@
     font-family: var(--font-ui);
     text-transform: uppercase;
     font-weight: bold;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
   }
   .case-file-toggle:hover {
     background: rgba(47, 129, 247, 0.1);
@@ -183,13 +212,44 @@
     position: absolute;
     inset: 40px;
     z-index: 30;
-    background: rgba(13, 17, 23, 0.98);
-    border: 1px solid var(--border);
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 0 50px rgba(0,0,0,0.8);
-    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+  }
+
+  .folder-header {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  .folder-label {
+    font-family: var(--typewriter-font);
+    font-size: 14px;
+    color: var(--ink-dark);
+    opacity: 0.7;
+    letter-spacing: 2px;
+    font-weight: bold;
+  }
+
+  .close-folder-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: var(--ink-dark);
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+  }
+  .close-folder-btn:hover {
+    opacity: 1;
   }
 
   .case-file-content {
@@ -200,40 +260,47 @@
 
   .notebook-tabs {
     display: flex;
-    border-bottom: 1px solid var(--border);
-    background: rgba(1, 4, 9, 0.4);
-    border-radius: 8px 8px 0 0;
-    padding: 0 20px;
+    padding: 10px 20px 0;
+    gap: 4px;
   }
 
   .tab-btn {
-    background: transparent;
+    background: rgba(0, 0, 0, 0.1);
     border: none;
-    border-bottom: 2px solid transparent;
-    color: var(--muted);
-    padding: 16px 20px;
+    border-radius: 8px 8px 0 0;
+    color: var(--ink-dark);
+    padding: 12px 24px;
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 1px;
     cursor: pointer;
     transition: all 0.2s;
     font-weight: 600;
+    opacity: 0.7;
+    font-family: var(--typewriter-font);
   }
 
   .tab-btn:hover {
-    color: var(--ink);
-    background: rgba(255,255,255,0.02);
+    opacity: 0.9;
+    transform: translateY(-2px);
   }
 
   .tab-btn.active {
-    color: var(--accent-primary);
-    border-bottom-color: var(--accent-primary);
+    background: var(--paper-bg);
+    opacity: 1;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+    transform: translateY(0);
+    position: relative;
+    z-index: 2;
   }
 
   .notebook-body {
     flex: 1;
     overflow-y: auto;
     padding: 30px;
+    position: relative;
+    z-index: 1;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
   }
 
   .tab-pane {
@@ -242,11 +309,5 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    animation: fadeIn 0.3s ease-out;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
   }
 </style>

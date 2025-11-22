@@ -10,6 +10,7 @@ export const time = writable(540); // Start at 9:00 AM (in minutes)
 export const pendingProgressScenes = writable(new Map());
 export const lastCombinationMessage = writable("");
 export const currentMapLocation = writable(null);
+export const interactionMode = writable(null); // null or itemName
 
 export const currentScene = derived(
     [currentCase, currentSceneId],

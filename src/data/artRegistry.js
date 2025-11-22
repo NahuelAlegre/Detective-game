@@ -1,7 +1,15 @@
 import hallBg from './images/backgrounds/hall.png';
 import labBg from './images/backgrounds/lab.png';
 import securityRoomBg from './images/backgrounds/securityRoom.png';
-import basementBg from './images/backgrounds/sotano.png';
+import basementBg from './images/backgrounds/basement.png';
+import accessLogBg from './images/backgrounds/accessLog.png';
+import AudioGhostBg from './images/backgrounds/AudioGhost.png';
+import basementWindowsBg from './images/backgrounds/basementWindows.png';
+import BlankScreenBg from './images/backgrounds/BlankScreen.png';
+import exhibitRoomBg from './images/backgrounds/exhibitRoom.png';
+import MuddyFootprintsBg from './images/backgrounds/MuddyFootprints.png';
+import receiptBg from './images/backgrounds/receipt.png';
+import shatteredGlassBg from './images/backgrounds/shatteredGlass.png';
 
 const backgrounds = {
   hall: hallBg,
@@ -14,6 +22,14 @@ const backgrounds = {
   'cuarto-de-seguridad': securityRoomBg,
   basement: basementBg,
   sotano: basementBg,
+  accesslog: accessLogBg,
+  audioghost: AudioGhostBg,
+  basementwindows: basementWindowsBg,
+  blankscreen: BlankScreenBg,
+  exhibitroom: exhibitRoomBg,
+  muddyfootprints: MuddyFootprintsBg,
+  receipt: receiptBg,
+  shatteredglass: shatteredGlassBg,
 };
 
 const characters = {};

@@ -1,8 +1,8 @@
 import { get } from 'svelte/store';
-import { 
-    currentCase, currentSceneId, conceptInventory, suspects, locations, 
-    notes, time, pendingProgressScenes, 
-    lastCombinationMessage, currentMapLocation 
+import {
+    currentCase, currentSceneId, conceptInventory, suspects, locations,
+    notes, time, pendingProgressScenes,
+    lastCombinationMessage, currentMapLocation, interactionMode
 } from './stores.js';
 import { cases } from './data/cases.js';
 import { playCombineSuccess, playCombineFail } from './sfx.js';
@@ -80,14 +80,14 @@ export function addConcept(name, parents = []) {
     if (!name) return;
     conceptInventory.update(inv => {
         if (inv.some(c => c.name === name)) return inv;
-        
+
         const $currentCase = get(currentCase);
         const definition = ($currentCase && $currentCase.concepts && $currentCase.concepts[name]) || {};
         const type = definition.type || "sensorial";
         const description = definition.description || "Concepto registrado.";
         const tags = definition.tags || [];
         const ponderText = definition.ponderText || "";
-        
+
         return [...inv, { name, type, description, parents, tags, ponderText, archived: false }];
     });
 }
@@ -119,7 +119,7 @@ export function updateSuspicions(name, amount) {
             if (s.name === name) {
                 // Solution 2: Irreversible Consequences. Suspicion can only increase.
                 // We ignore negative amounts to prevent "fixing" suspicion.
-                const change = Math.max(0, amount); 
+                const change = Math.max(0, amount);
                 return { ...s, suspicionLevel: Math.max(0, Math.min(5, s.suspicionLevel + change)) };
             }
             return s;
@@ -135,7 +135,7 @@ export function revealSuspect(name) {
     if (!$currentCase || !$currentCase.suspects) return;
 
     const suspectDef = $currentCase.suspects.find(s => s.name === name);
-    
+
     if (suspectDef) {
         suspects.update(list => [...list, {
             name: suspectDef.name,
@@ -214,11 +214,11 @@ function discoverLocationByMapId(mapId) {
 
 export function applyLocationProgress(progressData) {
     if (!progressData || !progressData.location) return null;
-    
+
     let result = null;
     locations.update(locs => {
         const base = locs[progressData.location] || {};
-        const loc = { 
+        const loc = {
             name: progressData.location,
             description: "",
             totalProgress: 1,
@@ -229,10 +229,10 @@ export function applyLocationProgress(progressData) {
             ...base,
         };
         if (!loc) {
-             // Should have been ensured, but just in case
-             return locs; 
+            // Should have been ensured, but just in case
+            return locs;
         }
-        
+
         const gain = progressData.progressGain || 0;
         const wasCompleted = loc.completed;
         loc.currentProgress = Math.min(loc.totalProgress, loc.currentProgress + gain);
@@ -240,7 +240,7 @@ export function applyLocationProgress(progressData) {
             loc.completed = true;
         }
         loc.discovered = true;
-        
+
         const justCompleted = !wasCompleted && loc.completed;
         if (justCompleted && progressData.onComplete) {
             result = {
@@ -248,10 +248,10 @@ export function applyLocationProgress(progressData) {
                 text: progressData.onCompleteText || `Nuevo evento en ${loc.name}`,
             };
         }
-        
+
         return { ...locs, [progressData.location]: loc };
     });
-    
+
     return result;
 }
 
@@ -282,7 +282,7 @@ function applySceneEffects(scene) {
     if (scene.suspectConcepts) {
         scene.suspectConcepts.forEach((pair) => addSuspectConcept(pair.name, pair.concept));
     }
-    
+
     if (scene.location) {
         currentMapLocation.set(scene.location);
         discoverLocationByMapId(scene.location);
@@ -292,7 +292,7 @@ function applySceneEffects(scene) {
 function checkEndings(scene) {
     const $currentCase = get(currentCase);
     if (!$currentCase.endings) return null;
-    
+
     const $conceptInventory = get(conceptInventory);
     const $suspects = get(suspects);
 
@@ -301,7 +301,7 @@ function checkEndings(scene) {
     for (const ending of $currentCase.endings) {
         const conditions = ending.conditions || {};
         let met = true;
-        
+
         if (conditions.concepts) {
             if (!conditions.concepts.every(hasConcept)) met = false;
         }
@@ -329,7 +329,7 @@ export function showScene(sceneId) {
     if (!scene) return;
 
     currentSceneId.set(sceneId);
-    
+
     pendingProgressScenes.update(map => {
         if (map.has(sceneId)) {
             const newMap = new Map(map);
@@ -340,7 +340,7 @@ export function showScene(sceneId) {
     });
 
     applySceneEffects(scene);
-    
+
     const endingSceneId = checkEndings(scene);
     if (endingSceneId && endingSceneId !== sceneId) {
         setTimeout(() => showScene(endingSceneId), 100);
@@ -350,7 +350,7 @@ export function showScene(sceneId) {
 export function combineConcepts(conceptA, conceptB) {
     const $currentCase = get(currentCase);
     const $conceptInventory = get(conceptInventory);
-    
+
     const combos = ($currentCase && $currentCase.combinations) || [];
     const match = combos.find((combo) => {
         const reqs = combo.requires || combo.inputs || [];
@@ -362,7 +362,7 @@ export function combineConcepts(conceptA, conceptB) {
         if (match.associateSuspect) {
             addSuspectConcept(match.associateSuspect, match.result);
         }
-        
+
         // Archive used concepts
         conceptInventory.update(inv => inv.map(c => {
             if (match.requires.includes(c.name)) {
@@ -378,7 +378,7 @@ export function combineConcepts(conceptA, conceptB) {
         // Contextual Feedback
         const cA = $conceptInventory.find(c => c.name === conceptA);
         const cB = $conceptInventory.find(c => c.name === conceptB);
-        
+
         if (cA && cB) {
             const sharedTags = cA.tags.filter(tag => cB.tags.includes(tag));
             if (sharedTags.length > 0) {
@@ -389,6 +389,43 @@ export function combineConcepts(conceptA, conceptB) {
         } else {
             lastCombinationMessage.set("La combinación no encaja.");
         }
+        playCombineFail();
+        return false;
+    }
+}
+
+export function useItemOnChoice(itemName, choiceId) {
+    const $currentCase = get(currentCase);
+    if (!$currentCase || !$currentCase.interactions) {
+        lastCombinationMessage.set("No ocurre nada interesante.");
+        playCombineFail();
+        return false;
+    }
+
+    const interaction = $currentCase.interactions.find(i =>
+        i.item === itemName && i.choiceId === choiceId
+    );
+
+    if (interaction) {
+        // Success
+        if (interaction.message) {
+            lastCombinationMessage.set(interaction.message);
+        }
+        if (interaction.reward) {
+            [].concat(interaction.reward).forEach(r => addConcept(r));
+            playCombineSuccess();
+        }
+        if (interaction.nextScene) {
+            showScene(interaction.nextScene);
+        }
+        if (interaction.suspectAdjustments) {
+            interaction.suspectAdjustments.forEach((adj) => updateSuspicions(adj.name, adj.change || 0));
+        }
+        interactionMode.set(null); // Exit interaction mode on success
+        return true;
+    } else {
+        // Failure / Default
+        lastCombinationMessage.set(`Usar ${itemName} aquí no parece útil.`);
         playCombineFail();
         return false;
     }

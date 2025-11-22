@@ -1,5 +1,5 @@
 <script>
-  import { conceptInventory, lastCombinationMessage } from '../stores.js';
+  import { conceptInventory, lastCombinationMessage, interactionMode } from '../stores.js';
   import { combineConcepts, ponderConcept } from '../engine.js';
   import { playChoiceClick } from '../sfx.js';
 
@@ -23,6 +23,15 @@
       playChoiceClick();
       ponderConcept(selected[0]);
       selected = [];
+    }
+  }
+
+  function toggleInteractionMode() {
+    playChoiceClick();
+    if ($interactionMode) {
+        interactionMode.set(null);
+    } else if (selected.length === 1) {
+        interactionMode.set(selected[0]);
     }
   }
 
@@ -88,6 +97,14 @@
     <div class="actions-row">
         <button class="action-btn" disabled={selected.length !== 1} on:click={handlePonder}>
             INSPECCIONAR
+        </button>
+        <button 
+            class="action-btn" 
+            class:active={$interactionMode}
+            disabled={selected.length !== 1 && !$interactionMode} 
+            on:click={toggleInteractionMode}
+        >
+            {$interactionMode ? 'CANCELAR USO' : 'USAR'}
         </button>
     </div>
     
@@ -203,6 +220,11 @@
         background: #222;
         border-color: var(--accent-primary);
         color: var(--accent-primary);
+    }
+    .action-btn.active {
+        background: var(--accent-primary);
+        color: white;
+        border-color: var(--accent-primary);
     }
 
     #inventory-list {
