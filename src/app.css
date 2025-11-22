@@ -821,29 +821,77 @@ aside.card:hover {
 
 /* Map */
 .mini-map-grid {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: radial-gradient(circle at 25% 25%, rgba(47, 129, 247, 0.08), transparent 40%),
+    radial-gradient(circle at 75% 10%, rgba(210, 168, 255, 0.05), transparent 38%),
+    rgba(7, 10, 15, 0.85);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.mini-map-grid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.7;
+  pointer-events: none;
 }
 
 .map-node {
   aspect-ratio: 1;
-  background: rgba(255, 255, 255, 0.05);
+  position: relative;
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 6px;
+  clip-path: polygon(8% 0%, 92% 0%, 100% 18%, 100% 82%, 92% 100%, 8% 100%, 0% 82%, 0% 18%);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 10px;
-  color: var(--muted);
-  transition: all 0.3s;
+  color: rgba(255, 255, 255, 0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+}
+
+.map-node::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+}
+
+.map-node:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.map-node.visited {
+  color: #e6edf3;
+  border-color: rgba(47, 129, 247, 0.45);
+  box-shadow: 0 8px 22px rgba(47, 129, 247, 0.15), 0 12px 24px rgba(0, 0, 0, 0.4);
 }
 
 .map-node.active {
-  background: rgba(47, 129, 247, 0.2);
+  background: linear-gradient(145deg, rgba(47, 129, 247, 0.35), rgba(47, 129, 247, 0.12));
   border-color: var(--accent-primary);
   color: var(--ink);
-  box-shadow: 0 0 12px var(--accent-glow);
+  box-shadow: 0 0 14px var(--accent-glow), 0 10px 24px rgba(47, 129, 247, 0.28);
+  transform: translateY(-3px);
 }
 
 /* Suspects */

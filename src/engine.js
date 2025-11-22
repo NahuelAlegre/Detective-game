@@ -70,6 +70,7 @@ function initLocations(data, caseData) {
             currentProgress: Math.min(current, total),
             completed: current >= total,
             discovered: false,
+            visited: Boolean(location.visited),
             mapId: location.mapId || match?.id || null,
         };
     });
@@ -169,6 +170,7 @@ function ensureLocation(name) {
                 currentProgress: 0,
                 completed: false,
                 discovered: false,
+                visited: false,
                 mapId: null,
             };
             return updated;
@@ -189,7 +191,7 @@ function discoverLocationByMapId(mapId) {
         });
         if (matched) {
             const [key, loc] = matched;
-            return { ...locs, [key]: { ...loc, discovered: true } };
+            return { ...locs, [key]: { ...loc, discovered: true, visited: true } };
         }
 
         const $currentCase = get(currentCase);
@@ -204,8 +206,9 @@ function discoverLocationByMapId(mapId) {
                 completed: false,
                 mapId,
                 discovered: false,
+                visited: false,
             };
-            return { ...locs, [key]: { ...existing, mapId, discovered: true } };
+            return { ...locs, [key]: { ...existing, mapId, discovered: true, visited: true } };
         }
 
         return locs;
@@ -225,6 +228,7 @@ export function applyLocationProgress(progressData) {
             currentProgress: 0,
             completed: false,
             discovered: base.discovered || false,
+            visited: base.visited || false,
             mapId: base.mapId || null,
             ...base,
         };
@@ -240,6 +244,7 @@ export function applyLocationProgress(progressData) {
             loc.completed = true;
         }
         loc.discovered = true;
+        loc.visited = true;
 
         const justCompleted = !wasCompleted && loc.completed;
         if (justCompleted && progressData.onComplete) {

@@ -178,8 +178,6 @@
     position: absolute;
     top: 20px;
     right: 20px;
-    width: 250px;
-    height: 200px;
     z-index: 5;
     opacity: 0.9;
     transition: opacity 0.2s;
