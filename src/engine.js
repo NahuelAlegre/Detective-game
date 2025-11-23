@@ -2,9 +2,11 @@ import { get } from 'svelte/store';
 import {
     currentCase, currentSceneId, conceptInventory, suspects, locations,
     notes, time, pendingProgressScenes,
-    lastCombinationMessage, currentMapLocation, interactionMode
+    lastCombinationMessage, currentMapLocation, interactionMode,
+    gameMode, overworldState
 } from './stores.js';
 import { cases } from './data/cases.js';
+import { getCaseOverworld } from './overworld/overworldData.js';
 import { playCombineSuccess, playCombineFail } from './sfx.js';
 
 function normalizeText(text = "") {
@@ -14,10 +16,139 @@ function normalizeText(text = "") {
         .replace(/[\u0300-\u036f]/g, "");
 }
 
+const baseOverworldState = {
+    caseId: null,
+    mapId: null,
+    spawn: "default",
+    playerPosition: null,
+    npcPositions: {},
+    disabledInteractions: [],
+    mode: "move",
+    dialogue: null,
+};
+
+function syncLocationFromMap(caseId, mapId) {
+    if (!mapId) return;
+    const config = caseId ? getCaseOverworld(caseId) : null;
+    const mapDef = config?.maps?.find((m) => m.id === mapId);
+    const locationId = mapDef?.location || mapId;
+    currentMapLocation.set(locationId);
+    discoverLocationByMapId(locationId);
+}
+
+export function resetOverworldState() {
+    overworldState.set({ ...baseOverworldState });
+    gameMode.set("story");
+}
+
+export function enterOverworld(options = {}) {
+    const $currentCase = get(currentCase);
+    const activeCaseId = options.caseId || $currentCase?.id || null;
+    const config = activeCaseId ? getCaseOverworld(activeCaseId) : null;
+    const nextMap = options.mapId || config?.start?.mapId || null;
+    const spawn = options.spawn || config?.start?.spawn || "default";
+
+    overworldState.set({
+        ...baseOverworldState,
+        caseId: activeCaseId,
+        mapId: nextMap,
+        spawn,
+    });
+    gameMode.set("overworld");
+    syncLocationFromMap(activeCaseId, nextMap);
+}
+
+export function exitOverworld() {
+    gameMode.set("story");
+    overworldState.update((state) => ({
+        ...state,
+        mode: "move",
+        dialogue: null,
+    }));
+}
+
+export function openOverworldDialogue(sceneId, context = {}) {
+    if (!sceneId) return;
+    showScene(sceneId);
+    overworldState.update((state) => ({
+        ...state,
+        mode: "locked",
+        dialogue: { sceneId, context },
+    }));
+}
+
+export function closeOverworldDialogue() {
+    overworldState.update((state) => ({
+        ...state,
+        mode: "move",
+        dialogue: null,
+    }));
+}
+
+export function applyOverworldEffects(effects = []) {
+    const list = Array.isArray(effects) ? effects : [effects];
+    list.forEach((effect) => {
+        switch (effect.type) {
+            case "unlockInteraction":
+                if (effect.id) {
+                    overworldState.update((state) => ({
+                        ...state,
+                        disabledInteractions: (state.disabledInteractions || []).filter((id) => id !== effect.id),
+                    }));
+                }
+                break;
+            case "disableInteraction":
+                if (effect.id) {
+                    overworldState.update((state) => ({
+                        ...state,
+                        disabledInteractions: Array.from(new Set([...(state.disabledInteractions || []), effect.id])),
+                    }));
+                }
+                break;
+            case "moveNPC":
+                if (effect.id) {
+                    overworldState.update((state) => ({
+                        ...state,
+                        npcPositions: {
+                            ...state.npcPositions,
+                            [effect.id]: {
+                                mapId: effect.mapId || state.mapId,
+                                x: effect.x ?? 0,
+                                y: effect.y ?? 0,
+                            },
+                        },
+                    }));
+                }
+                break;
+            case "changeMap":
+                changeOverworldMap(effect);
+                break;
+            default:
+                break;
+        }
+    });
+}
+
+export function changeOverworldMap(effect = {}) {
+    if (!effect.mapId) return;
+    const spawn = effect.spawn || "default";
+    overworldState.update((state) => ({
+        ...state,
+        mapId: effect.mapId,
+        spawn,
+        playerPosition: null,
+        mode: "move",
+        dialogue: null,
+    }));
+    updateTime(effect.timeCost ?? 15);
+    syncLocationFromMap(get(currentCase)?.id || null, effect.mapId);
+}
+
 export function startGame(caseId) {
     const selectedCase = cases[caseId];
     if (!selectedCase) return;
 
+    resetOverworldState();
     currentCase.set(selectedCase);
     currentSceneId.set(selectedCase.startScene);
     conceptInventory.set([]);
@@ -43,6 +174,7 @@ export function restartGame() {
 export function openCaseSelector() {
     currentCase.set(null);
     currentSceneId.set("");
+    resetOverworldState();
 }
 
 function initSuspects(data) {
@@ -291,6 +423,10 @@ function applySceneEffects(scene) {
     if (scene.location) {
         currentMapLocation.set(scene.location);
         discoverLocationByMapId(scene.location);
+    }
+
+    if (scene.overworldEffects) {
+        applyOverworldEffects(scene.overworldEffects);
     }
 }
 

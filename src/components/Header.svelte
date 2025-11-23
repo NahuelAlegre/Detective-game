@@ -1,6 +1,6 @@
 <script>
-  import { currentCase, uiState } from "../stores.js";
-  import { restartGame, openCaseSelector } from "../engine.js";
+  import { currentCase, uiState, gameMode } from "../stores.js";
+  import { restartGame, openCaseSelector, enterOverworld, exitOverworld } from "../engine.js";
   import { playModalOpen } from "../sfx.js";
 
   function toggleView(view) {
@@ -9,6 +9,15 @@
       ...state,
       activeView: state.activeView === view ? null : view,
     }));
+  }
+
+  function toggleOverworld() {
+    if (!$currentCase) return;
+    if ($gameMode === "overworld") {
+      exitOverworld();
+    } else {
+      enterOverworld({});
+    }
   }
 </script>
 
@@ -86,6 +95,28 @@
         ><circle cx="12" cy="12" r="10"></circle><polyline
           points="12 6 12 12 16 14"
         ></polyline></svg
+      >
+    </button>
+    <button
+      class="nav-btn"
+      class:active={$gameMode === "overworld"}
+      on:click={toggleOverworld}
+      title="Overworld"
+      disabled={!$currentCase}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><circle cx="12" cy="12" r="10"></circle><path
+          d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z"
+        ></path></svg
       >
     </button>
   </nav>

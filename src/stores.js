@@ -1,5 +1,6 @@
 import { writable, derived } from 'svelte/store';
 
+export const gameMode = writable("story"); // "story" | "overworld"
 export const currentCase = writable(null);
 export const currentSceneId = writable("");
 export const conceptInventory = writable([]);
@@ -11,6 +12,17 @@ export const pendingProgressScenes = writable(new Map());
 export const lastCombinationMessage = writable("");
 export const currentMapLocation = writable(null);
 export const interactionMode = writable(null); // null or itemName
+
+export const overworldState = writable({
+    caseId: null,
+    mapId: null,
+    spawn: "default",
+    playerPosition: null,
+    npcPositions: {},
+    disabledInteractions: [],
+    mode: "move", // "move" | "locked"
+    dialogue: null, // { sceneId, context }
+});
 
 export const uiState = writable({
     activeView: null, // 'caseFile', 'inventory', 'history', or null
