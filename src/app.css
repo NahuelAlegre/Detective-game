@@ -40,10 +40,14 @@
   /* View Transitions */
   --transition-speed: 0.3s;
 
-  /* Paper & Folder Theme */
+  /* Tech Theme */
+  --tech-bg: rgba(13, 17, 23, 0.95);
+  --tech-border: var(--accent-primary);
+  --tech-glow: 0 0 15px rgba(47, 129, 247, 0.2);
+
+  /* Legacy Paper Theme (kept for compatibility if needed, but overridden in UI) */
   --paper-bg: #f4e4bc;
   --paper-line: #a8d8e6;
-  /* Light blue line */
   --folder-bg: #e8dcb5;
   --folder-tab: #dcc694;
   --folder-tab-active: #f4e4bc;

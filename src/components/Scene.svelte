@@ -369,6 +369,7 @@
       transparent 100%
     );
     min-height: 40%;
+    padding-bottom: 160px; /* Prevent overlap with footer */
   }
 
   .scene-text-panel {

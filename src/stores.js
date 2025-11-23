@@ -12,6 +12,11 @@ export const lastCombinationMessage = writable("");
 export const currentMapLocation = writable(null);
 export const interactionMode = writable(null); // null or itemName
 
+export const uiState = writable({
+    activeView: null, // 'caseFile', 'inventory', 'history', or null
+    activeTab: 'investigation' // 'investigation', 'notes', 'locations'
+});
+
 export const currentScene = derived(
     [currentCase, currentSceneId],
     ([$currentCase, $currentSceneId]) => {
