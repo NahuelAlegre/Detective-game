@@ -185,6 +185,31 @@ export const tutorialCase = {
       item: "Lupa",
       choiceId: "Oler el aire",
       message: "La lupa no te ayuda a oler mejor, genio."
+    },
+    {
+      item: "Lupa",
+      choiceId: "Ir a la Sala de Exhibición",
+      message: "No necesitas una lupa para encontrar la puerta, es bastante grande."
+    },
+    {
+      item: "Lupa",
+      choiceId: "Interrogar a Miller sobre el 'fantasma'",
+      message: "¿Planeas examinar sus poros mientras habla? Mejor solo escúchalo."
+    },
+    {
+      item: "Lupa",
+      choiceId: "Revisar grabaciones de seguridad",
+      message: "La lupa no hará que las grabaciones tengan más resolución. Esto no es CSI."
+    },
+    {
+      item: "Lupa",
+      choiceId: "Hablar con Sarah",
+      message: "Sarah te mira raro cuando acercas la lupa a su cara. '¿Tengo algo en los dientes, detective?'"
+    },
+    {
+      item: "Lupa",
+      choiceId: "Forzar la cerradura",
+      message: "Mirar la cerradura muy de cerca no hará que se abra mágicamente."
     }
   ],
   endings: [],
